@@ -8,12 +8,16 @@ services:
     buildCommand: |
       npm ci
       # Create .env for react-native-dotenv (optional). Add keys in Render > Environment.
-      # Example: API_BASE_URL. Remove if not needed.
-      if [ -n "$API_BASE_URL" ]; then echo "API_BASE_URL=$API_BASE_URL" > .env; fi
+      # Prefer BASE_URL; fallback to API_BASE_URL; write as BASE_URL for the app to consume
+      rm -f .env
+      if [ -n "$BASE_URL" ]; then echo "BASE_URL=$BASE_URL" >> .env; fi
+      if [ -n "$API_BASE_URL" ]; then echo "BASE_URL=$API_BASE_URL" >> .env; fi
       npx expo --version
-      # Export web build to ./dist (Expo SDK 49+). Adjust if your output dir differs.
-      npx expo export --platform web
-    startCommand: npx serve -s dist -l $PORT
+      # Export web build explicitly to ./dist
+      npx expo export --platform web --output-dir dist
+      # Optional: list output for debugging
+      ls -la dist || true
+    startCommand: node node_modules/serve/bin/serve.js -s dist -l $PORT
     # Optional health check for static content
     healthCheckPath: /
     # Define build-time env vars here or via Render dashboard
