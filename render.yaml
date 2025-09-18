@@ -6,7 +6,7 @@ services:
     autoDeploy: true
     # Build: install deps, generate .env from Render env vars (if defined), then export web build
     buildCommand: |
-  if [ -f package-lock.json ]; then npm ci || npm install; else npm install; fi
+      if [ -f package-lock.json ]; then npm ci || npm install; else npm install; fi
       # Create .env for react-native-dotenv (optional). Add keys in Render > Environment.
       # Prefer BASE_URL; fallback to API_BASE_URL; write as BASE_URL for the app to consume
       rm -f .env
@@ -17,7 +17,7 @@ services:
       npx expo export --platform web --output-dir dist
       # Optional: list output for debugging
       ls -la dist || true
-  startCommand: npx serve -s dist -l $PORT
+    startCommand: npx serve -s dist -l $PORT
     # Optional health check for static content
     healthCheckPath: /
     # Define build-time env vars here or via Render dashboard
