@@ -37,12 +37,14 @@ export default function LoginScreen({ navigation }) {
         // Save token and userId to AsyncStorage
         if (res.token) await AsyncStorage.setItem('token', res.token);
         if (res.user && res.user._id) await AsyncStorage.setItem('userId', res.user._id);
-        Alert.alert('Login Success', 'Welcome!', [
-          {
-            text: 'OK',
-            onPress: () => navigation && navigation.navigate && navigation.navigate('Categories'),
-          },
-        ]);
+        // Navigate immediately (Alert callbacks do not work on web)
+        if (navigation?.replace) {
+          navigation.replace('Categories');
+        } else if (navigation?.navigate) {
+          navigation.navigate('Categories');
+        }
+        // Optional, fire-and-forget feedback
+        Alert.alert('Login Success', 'Welcome!');
       } else {
         Alert.alert('Login Failed', res.message || 'Invalid credentials');
       }

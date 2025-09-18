@@ -35,12 +35,13 @@ export default function RegisterScreen({ navigation }) {
         res.token ||
         (res.message && res.message.toLowerCase().includes('registered'))
       ) {
-        Alert.alert('Register Success', 'You can now login.', [
-          {
-            text: 'OK',
-            onPress: () => navigation && navigation.navigate && navigation.navigate('Login'),
-          },
-        ]);
+        // Navigate immediately (web Alert callbacks won't trigger reliably)
+        if (navigation?.replace) {
+          navigation.replace('Login');
+        } else if (navigation?.navigate) {
+          navigation.navigate('Login');
+        }
+        Alert.alert('Register Success', 'You can now login.');
       } else {
         Alert.alert('Register Failed', res.message || 'Could not register');
       }
