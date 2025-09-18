@@ -1,5 +1,5 @@
 services:
-  - type: static
+  - type: web
     name: cloud-receipt-frontend
     env: static
     # Build: install deps, generate .env from Render env vars (if defined), then export web build
