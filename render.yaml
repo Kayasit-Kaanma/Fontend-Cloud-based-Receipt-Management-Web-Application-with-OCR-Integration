@@ -17,6 +17,16 @@ services:
       npx expo export --platform web --output-dir dist
       # Optional: list output for debugging
       ls -la dist || true
+      # Ensure SPA entry works with serve: fallback to app.html
+      if [ -f dist/app.html ] && [ ! -f dist/index.html ]; then cp dist/app.html dist/index.html; fi
+      # Generate serve.json to rewrite all routes to app.html (works with `serve`)
+      cat > dist/serve.json << 'EOF'
+      {
+        "rewrites": [
+          { "source": "**", "destination": "/app.html" }
+        ]
+      }
+      EOF
     startCommand: npx serve -s dist -l $PORT
     # Optional health check for static content
     healthCheckPath: /
