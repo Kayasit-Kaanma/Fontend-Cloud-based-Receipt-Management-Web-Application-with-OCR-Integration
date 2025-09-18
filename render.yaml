@@ -1,0 +1,28 @@
+services:
+  - type: static
+    name: cloud-receipt-frontend
+    env: static
+    # Build: install deps, generate .env from Render env vars (if defined), then export web build
+    buildCommand: |
+      npm ci
+      # Create .env for react-native-dotenv (optional). Add keys in Render > Environment.
+      # Example: API_BASE_URL. Remove if not needed.
+      if [ -n "$API_BASE_URL" ]; then echo "API_BASE_URL=$API_BASE_URL" > .env; fi
+      npx expo --version
+      # Export web build to ./dist (Expo SDK 49+)
+      npx expo export --platform web
+    staticPublishPath: dist
+    # SPA rewrite so client-side routing works (expo-router)
+    routes:
+      - type: rewrite
+        source: /*
+        destination: /index.html
+    # Optional caching headers
+    headers:
+      - path: /*
+        name: Cache-Control
+        value: public, max-age=0, must-revalidate
+    # Define build-time env vars here or via Render dashboard
+    # envVars:
+    #   - key: API_BASE_URL
+    #     fromSecret: api-base-url
