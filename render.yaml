@@ -1,7 +1,9 @@
 services:
   - type: web
     name: cloud-receipt-frontend
-    env: static
+    env: node
+    plan: free
+    autoDeploy: true
     # Build: install deps, generate .env from Render env vars (if defined), then export web build
     buildCommand: |
       npm ci
@@ -9,19 +11,11 @@ services:
       # Example: API_BASE_URL. Remove if not needed.
       if [ -n "$API_BASE_URL" ]; then echo "API_BASE_URL=$API_BASE_URL" > .env; fi
       npx expo --version
-      # Export web build to ./dist (Expo SDK 49+)
+      # Export web build to ./dist (Expo SDK 49+). Adjust if your output dir differs.
       npx expo export --platform web
-    staticPublishPath: dist
-    # SPA rewrite so client-side routing works (expo-router)
-    routes:
-      - type: rewrite
-        source: /*
-        destination: /index.html
-    # Optional caching headers
-    headers:
-      - path: /*
-        name: Cache-Control
-        value: public, max-age=0, must-revalidate
+    startCommand: npx serve -s dist -l $PORT
+    # Optional health check for static content
+    healthCheckPath: /
     # Define build-time env vars here or via Render dashboard
     # envVars:
     #   - key: API_BASE_URL
