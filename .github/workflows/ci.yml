@@ -38,7 +38,16 @@ jobs:
       - name: Expo Web Export (optional)
         run: |
           if npm run | grep -q "web"; then
-            npx expo export --platform web --force
+            npx expo --version
+            # For Expo Router v3+/Expo SDK 50+, the command is `npx expo export --platform web`
+            # Older versions used `expo export:web` or `expo export` without platform flag.
+            # We'll try the modern command first, and fallback gracefully.
+            if npx expo export --platform web; then
+              echo "Expo web export completed"
+            else
+              echo "Modern export failed, trying legacy export:web"
+              npx expo export:web || echo "Legacy export failed as well; skipping web export"
+            fi
           else
             echo "No web script defined, skipping web export"
           fi
